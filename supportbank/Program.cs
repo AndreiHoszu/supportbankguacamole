@@ -91,32 +91,34 @@ namespace supportbank
             }
 
             String accountName = String.Join(" ", userInput.Split(" ").Skip(1).ToArray());
-
-            if(accountList.ContainsKey(accountName))
+            if(accountName != "All")
             {
-                Console.WriteLine("Account found.");
-
-                displayStatus(accountList, accountName);
-
-                Console.WriteLine("List of transactions:");
-
-                foreach (String line in dataLines)
+                if (accountList.ContainsKey(accountName))
                 {
-                    String[] lineData = line.Split(",");
+                    Console.WriteLine("Account found.");
 
-                    if(lineData[1] == accountName)
+                    displayStatus(accountList, accountName);
+
+                    Console.WriteLine("List of transactions:");
+
+                    foreach (String line in dataLines)
                     {
-                        Console.WriteLine(accountName + " sent " + lineData[4] + " to " + lineData[2] + " on " + lineData[0] + "; Narrative: " + lineData[3]);
-                    }
-                    if(lineData[2] == accountName)
-                    {
-                        Console.WriteLine(accountName + " received " + lineData[4] + " from " + lineData[1] + " on " + lineData[0] + "; Narrative: " + lineData[3]);
+                        String[] lineData = line.Split(",");
+
+                        if (lineData[1] == accountName)
+                        {
+                            Console.WriteLine(accountName + " sent " + lineData[4] + " to " + lineData[2] + " on " + lineData[0] + "; Narrative: " + lineData[3]);
+                        }
+                        if (lineData[2] == accountName)
+                        {
+                            Console.WriteLine(accountName + " received " + lineData[4] + " from " + lineData[1] + " on " + lineData[0] + "; Narrative: " + lineData[3]);
+                        }
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("Account was not found.");
+                else
+                {
+                    Console.WriteLine("Account was not found.");
+                }
             }
         }
     }
