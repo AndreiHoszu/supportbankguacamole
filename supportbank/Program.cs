@@ -106,11 +106,11 @@ namespace supportbank
 
                     if(lineData[1] == accountName)
                     {
-                        Console.WriteLine(accountName + " sent " + lineData[4] + " to " + lineData[2] + " on " + lineData[0]);
+                        Console.WriteLine(accountName + " sent " + lineData[4] + " to " + lineData[2] + " on " + lineData[0] + "; Narrative: " + lineData[3]);
                     }
                     if(lineData[2] == accountName)
                     {
-                        Console.WriteLine(accountName + " received " + lineData[4] + " from " + lineData[1] + " on " + lineData[0]);
+                        Console.WriteLine(accountName + " received " + lineData[4] + " from " + lineData[1] + " on " + lineData[0] + "; Narrative: " + lineData[3]);
                     }
                 }
             }
