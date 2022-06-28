@@ -1,0 +1,14 @@
+C:\Work\Training\supportbank\supportbank\bin\Debug\netcoreapp3.1\supportbank.exe
+C:\Work\Training\supportbank\supportbank\bin\Debug\netcoreapp3.1\supportbank.deps.json
+C:\Work\Training\supportbank\supportbank\bin\Debug\netcoreapp3.1\supportbank.runtimeconfig.json
+C:\Work\Training\supportbank\supportbank\bin\Debug\netcoreapp3.1\supportbank.runtimeconfig.dev.json
+C:\Work\Training\supportbank\supportbank\bin\Debug\netcoreapp3.1\supportbank.dll
+C:\Work\Training\supportbank\supportbank\bin\Debug\netcoreapp3.1\supportbank.pdb
+C:\Work\Training\supportbank\supportbank\obj\Debug\netcoreapp3.1\supportbank.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\Training\supportbank\supportbank\obj\Debug\netcoreapp3.1\supportbank.AssemblyInfoInputs.cache
+C:\Work\Training\supportbank\supportbank\obj\Debug\netcoreapp3.1\supportbank.AssemblyInfo.cs
+C:\Work\Training\supportbank\supportbank\obj\Debug\netcoreapp3.1\supportbank.csproj.CoreCompileInputs.cache
+C:\Work\Training\supportbank\supportbank\obj\Debug\netcoreapp3.1\supportbank.dll
+C:\Work\Training\supportbank\supportbank\obj\Debug\netcoreapp3.1\supportbank.pdb
+C:\Work\Training\supportbank\supportbank\obj\Debug\netcoreapp3.1\supportbank.genruntimeconfig.cache
+C:\Work\Training\supportbank\supportbank\obj\Debug\netcoreapp3.1\supportbank.csproj.AssemblyReference.cache
