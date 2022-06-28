@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "i8+ZkSjojsed6GHnuwevIGIeDfYaSsyzac9nZlqFu/1Rcso+tdVkJ9oO+U/LmmrNgNRHaKVdjui9X0MQS5iKNg==",
+  "dgSpecHash": "oq85fEzQ24nGx0U/baXaU97sxKPejwFMwcuDFuW/BPi07OLOjrOeeu9qxn9hzptaUmur8T/38EBdz9wVWSYxMg==",
   "success": true,
   "projectFilePath": "C:\\Work\\Training\\supportbank\\supportbank\\supportbank.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\AndHos\\.nuget\\packages\\json.net\\1.0.33\\json.net.1.0.33.nupkg.sha512",
+    "C:\\Users\\AndHos\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\AndHos\\.nuget\\packages\\nlog\\5.0.1\\nlog.5.0.1.nupkg.sha512"
+  ],
   "logs": []
 }
