@@ -1,66 +1,67 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace supportbank
 {
     class Program
     {
-        static String readDataFromCVS()
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
+        static Bank parseDataFromFiles(String[] paths)
         {
-            String data;
+            Bank bank = new Bank();
 
-            try
+            CSVParser csvParser = new CSVParser();
+            JSONParser jsonParser = new JSONParser();
+            XMLParser xmlParser = new XMLParser();
+
+            foreach (String path in paths)
             {
-                data = File.ReadAllText(@"C:\Work\Training\supportbank\supportbank\Transactions2014.csv");
-            }
-            catch(Exception e)
-            {
-                return "";
+                String format = path.Substring(path.LastIndexOf("."));
+
+                switch(format)
+                {
+                    case ".csv":
+                        bank = csvParser.parseFile(bank, path);
+                        break;
+                    case ".json":
+                        //dates will be converted to CVS format: day/month/year
+                        bank = jsonParser.parseFile(bank, path);
+                        break;
+                    case ".xml":
+                        //dates will be converted to CVS format: day/month/year
+                        bank = xmlParser.parseFile(bank, path);
+                        break;
+                    default:
+                        Console.WriteLine("Unsuported file type " + format);
+                        logger.Info("Program tried to read a file that is not supported.");
+                        break;
+                }
             }
 
-            return data;
+            return bank;
         }
 
-        static Dictionary<String, double> calculateTransactions(String[] dataLines)
+        static void displayStatus(Bank bank, String key)
         {
-            Dictionary<String, double> accountList = new Dictionary<string, double>();
+            bank.getAccount(key).calculateAmount();
 
-            foreach (String line in dataLines)
+            if (bank.getAccount(key).TotalAmount > 0)
             {
-                String[] lineData = line.Split(",");
-
-                if (accountList.ContainsKey(lineData[1]))
-                {
-                    accountList[lineData[1]] -= Double.Parse(lineData[4]);
-                }
-                else
-                {
-                    accountList.Add(lineData[1], -Double.Parse(lineData[4]));
-                }
-                if (accountList.ContainsKey(lineData[2]))
-                {
-                    accountList[lineData[2]] += Double.Parse(lineData[4]);
-                }
-                else
-                {
-                    accountList.Add(lineData[2], +Double.Parse(lineData[4]));
-                }
+                Console.WriteLine(key + " is owed " + Math.Round(bank.getAccount(key).TotalAmount, 2));
             }
-
-            return accountList;
-        }
-
-        static void displayStatus(Dictionary<String, double> accountList, String key)
-        {
-            if (accountList[key] > 0)
+            else if(bank.getAccount(key).TotalAmount < 0)
             {
-                Console.WriteLine(key + " is owed " + accountList[key]);
-            }
-            else if (accountList[key] < 0)
-            {
-                Console.WriteLine(key + " owes " + accountList[key]);
+                Console.WriteLine(key + " owes " + Math.Round(bank.getAccount(key).TotalAmount, 2));
             }
             else
             {
@@ -68,56 +69,77 @@ namespace supportbank
             }
         }
 
+        static void displayTransactions(Bank bank, String accountName)
+        {
+            if(bank.accountList.ContainsKey(accountName))
+            {
+                Console.WriteLine("Account found.");
+
+                displayStatus(bank, accountName);
+
+                Console.WriteLine("List of transactions:");
+
+                foreach(Transaction transaction in bank.getAccount(accountName).transactions)
+                {
+                    if(transaction.From == accountName)
+                    {
+                        Console.WriteLine(accountName + " sent " + transaction.Amount + " to " + transaction.To + " on " + transaction.Date + "; Narrative: " + transaction.Narrative);
+                    }
+                    else if(transaction.To == accountName)
+                    {
+                        Console.WriteLine(accountName + " received " + transaction.Amount + " from " + transaction.From + " on " + transaction.Date + "; Narrative: " + transaction.Narrative);
+                    }
+                }
+
+                Console.WriteLine("Testing\n");
+            }
+            else
+            {
+                Console.WriteLine("Account was not found.");
+                logger.Info("No known account matched the input.");
+            }
+        }
+
         static void Main(string[] args)
         {
-            Dictionary<String, double> accountList = new Dictionary<string, double>();
+            var config = new LoggingConfiguration();
+            var target = new FileTarget { FileName = @"C:\Work\Logs\SupportBank.log", Layout = @"${longdate} ${level} - ${logger}: ${message}" };
+            config.AddTarget("File Logger", target);
+            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
+            LogManager.Configuration = config;
+            logger.Info("Program started. Hooray!");
 
-            String dataText = readDataFromCVS();
-            String[] dataLines = dataText.Split("\n").Skip(1).SkipLast(1).ToArray();
+            String[] paths = { @"C:\Work\Training\supportbank\supportbank\Transactions2014.csv", @"C:\Work\Training\supportbank\supportbank\DodgyTransactions2015.csv" ,
+            @"C:\Work\Training\supportbank\supportbank\Transactions2013.json", @"C:\Work\Training\supportbank\supportbank\Transactions2012.xml"};
 
-            accountList = calculateTransactions(dataLines);
+            Bank bank = new Bank();
+            bank = parseDataFromFiles(paths);
+
+            logger.Info("Program successfully read the data from the specified files.");
+
+            logger.Info("Program successfully calculated the transactions.");
 
             Console.WriteLine("List All or List [Account]?");
-
             String userInput = Console.ReadLine();
-            List<String> keyList = new List<String>(accountList.Keys);
+            List<String> keyList = new List<String>(bank.getKeys());
 
             if(userInput == "List All")
             {
                 foreach(String key in keyList)
                 {
-                    displayStatus(accountList, key);
+                    displayStatus(bank, key);
+                    logger.Info("Successfully displayed each account's status.");
                 }
             }
 
             String accountName = String.Join(" ", userInput.Split(" ").Skip(1).ToArray());
-
-            if(accountList.ContainsKey(accountName))
+            if(accountName != "All")
             {
-                Console.WriteLine("Account found.");
-
-                displayStatus(accountList, accountName);
-
-                Console.WriteLine("List of transactions:");
-
-                foreach (String line in dataLines)
-                {
-                    String[] lineData = line.Split(",");
-
-                    if(lineData[1] == accountName)
-                    {
-                        Console.WriteLine(accountName + " sent " + lineData[4] + " to " + lineData[2] + " on " + lineData[0]);
-                    }
-                    if(lineData[2] == accountName)
-                    {
-                        Console.WriteLine(accountName + " received " + lineData[4] + " from " + lineData[1] + " on " + lineData[0]);
-                    }
-                }
+                displayTransactions(bank, accountName);
+                logger.Info("Successfully displayed account's status.");
             }
-            else
-            {
-                Console.WriteLine("Account was not found.");
-            }
+
+            logger.Info("Program ended successfully.");
         }
     }
 }
