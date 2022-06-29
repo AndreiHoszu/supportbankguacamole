@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,11 +7,48 @@ namespace supportbank
 {
     class Bank
     {
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
         public Dictionary<String, Account> accountList { get; set; }
 
         public Bank()
         {
             accountList = new Dictionary<String, Account>();
+        }
+
+        public Bank(String[] data)
+        {
+            accountList = new Dictionary<String, Account>();
+
+            foreach (String line in data)
+            {
+                String[] lineData = line.Split(",");
+
+                //check the first account
+                if(!accountList.ContainsKey(lineData[1]))
+                {
+                    setAccount(lineData[1], new Account(lineData[1]));
+                }
+                //check the second account
+                if (!accountList.ContainsKey(lineData[2]))
+                {
+                    setAccount(lineData[2], new Account(lineData[1]));
+                }
+
+                try
+                {
+                    getAccount(lineData[1]).TotalAmount -= Double.Parse(lineData[4]);
+                    getAccount(lineData[2]).TotalAmount = Double.Parse(lineData[4]);
+                    Double parsedAmount = Double.Parse(lineData[4]);
+                    addTransaction(lineData[1], new Transaction(DateTime.Parse(lineData[0]), lineData[1], lineData[2], lineData[3], parsedAmount));
+                    addTransaction(lineData[2], new Transaction(DateTime.Parse(lineData[0]), lineData[1], lineData[2], lineData[3], parsedAmount));
+                }
+                catch (Exception e)
+                {
+                    logger.Debug("Uh oh, something happened: the program tried to add a transaction and it failed.");
+                    logger.Error("Error:\n" + e + "\n\n" + line + "\n\n");
+                }
+            }
         }
 
         public Account getAccount(String accountName)
