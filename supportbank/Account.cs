@@ -6,17 +6,16 @@ namespace supportbank
 {
     class Account
     {
+        public Double TotalAmount { get; set; }
+        public String AccountName { get; }
+        public List<Transaction> transactions { get; }
+
         public Account(String accountName)
         {
             AccountName = accountName;
             transactions = new List<Transaction>();
             TotalAmount = 0;
         }
-        public Double TotalAmount { get; set; }
-
-        public String AccountName { get; }
-
-        public List<Transaction> transactions { get; }
 
         public void addTransaction(Transaction transaction)
         {
@@ -30,6 +29,26 @@ namespace supportbank
             {
                 TotalAmount += transaction.Amount;
             }
+        }
+
+        public void calculateAmount()
+        {
+            double owes = 0;
+            double owed = 0;
+
+            foreach(Transaction transaction in transactions)
+            {
+                if(transaction.From == AccountName)
+                {
+                    owes -= transaction.Amount;
+                }
+                if(transaction.To == AccountName)
+                {
+                    owed += transaction.Amount;
+                }
+            }
+
+            TotalAmount = owes + owed;
         }
     }
 }

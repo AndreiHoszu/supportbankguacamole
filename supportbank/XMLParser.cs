@@ -26,7 +26,7 @@ namespace supportbank
                 return null;
             }
 
-            return mergeBanks(bank, createBank(parseData(data)));
+            return bank.mergeBank(createBank(parseData(data)));
         }
 
         public String[] parseData(String data)
@@ -62,30 +62,30 @@ namespace supportbank
 
         public Bank createBank(String[] data)
         {
-            Bank temp = new Bank();
+            Bank bank = new Bank();
 
             foreach (String line in data)
             {
                 String[] lineData = line.Split(",");
 
                 //check the first account
-                if (!temp.accountList.ContainsKey(lineData[1]))
+                if (!bank.accountList.ContainsKey(lineData[1]))
                 {
-                    temp.setAccount(lineData[1], new Account(lineData[1]));
+                    bank.setAccount(lineData[1], new Account(lineData[1]));
                 }
                 //check the second account
-                if (!temp.accountList.ContainsKey(lineData[2]))
+                if (!bank.accountList.ContainsKey(lineData[2]))
                 {
-                    temp.setAccount(lineData[2], new Account(lineData[1]));
+                    bank.setAccount(lineData[2], new Account(lineData[1]));
                 }
 
                 try
                 {
-                    temp.getAccount(lineData[1]).TotalAmount -= Double.Parse(lineData[4]);
-                    temp.getAccount(lineData[2]).TotalAmount = Double.Parse(lineData[4]);
+                    bank.getAccount(lineData[1]).TotalAmount -= Double.Parse(lineData[4]);
+                    bank.getAccount(lineData[2]).TotalAmount = Double.Parse(lineData[4]);
                     Double parsedAmount = Double.Parse(lineData[4]);
-                    temp.addTransaction(lineData[1], new Transaction(DateTime.Parse(lineData[0]), lineData[1], lineData[2], lineData[3], parsedAmount));
-                    temp.addTransaction(lineData[2], new Transaction(DateTime.Parse(lineData[0]), lineData[1], lineData[2], lineData[3], parsedAmount));
+                    bank.addTransaction(lineData[1], new Transaction(DateTime.Parse(lineData[0]), lineData[1], lineData[2], lineData[3], parsedAmount));
+                    bank.addTransaction(lineData[2], new Transaction(DateTime.Parse(lineData[0]), lineData[1], lineData[2], lineData[3], parsedAmount));
                 }
                 catch (Exception e)
                 {
@@ -94,34 +94,7 @@ namespace supportbank
                 }
             }
 
-            return temp;
-        }
-
-        public Bank mergeBanks(Bank bank1, Bank bank2)
-        {
-            foreach (String accountName in bank2.getKeys())
-            {
-                if (bank1.accountList.ContainsKey(accountName))
-                {
-                    //this happens if both banks contain an account with the same name, so we have to merge them togheter
-
-                    Account temp1 = bank1.getAccount(accountName);
-                    Account temp2 = bank2.getAccount(accountName);
-
-                    foreach (Transaction transaction in temp2.transactions)
-                    {
-                        temp1.addTransaction(transaction);
-                    }
-
-                    bank1.setAccount(accountName, temp1);
-                }
-                else
-                {
-                    bank1.setAccount(accountName, bank2.getAccount(accountName));
-                }
-            }
-
-            return bank1;
+            return bank;
         }
     }
 }

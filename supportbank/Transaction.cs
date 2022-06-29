@@ -6,15 +6,6 @@ namespace supportbank
 {
     class Transaction
     {
-        public Transaction(DateTime date, String from, String to, String narrative, Double amount)
-        {
-            this.Date = date;
-            this.From = from;
-            this.To = to;
-            this.Narrative = narrative;
-            this.Amount = amount;
-        }
-
         public DateTime Date { get; set; }
 
         public String From { get; set; }
@@ -24,5 +15,14 @@ namespace supportbank
         public String Narrative { get; set; }
 
         public Double Amount { get; set; }
+
+        public Transaction(DateTime date, String from, String to, String narrative, Double amount)
+        {
+            this.Date = date;
+            this.From = from;
+            this.To = to;
+            this.Narrative = narrative;
+            this.Amount = amount;
+        }
     }
 }

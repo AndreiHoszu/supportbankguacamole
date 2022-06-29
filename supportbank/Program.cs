@@ -18,7 +18,7 @@ namespace supportbank
 
         static Bank parseDataFromFiles(String[] paths)
         {
-            Bank temp = new Bank();
+            Bank bank = new Bank();
 
             CSVParser csvParser = new CSVParser();
             JSONParser jsonParser = new JSONParser();
@@ -31,15 +31,15 @@ namespace supportbank
                 switch(format)
                 {
                     case ".csv":
-                        temp = csvParser.parseFile(temp, path);
+                        bank = csvParser.parseFile(bank, path);
                         break;
                     case ".json":
                         //dates will be converted to CVS format: day/month/year
-                        temp = jsonParser.parseFile(temp, path);
+                        bank = jsonParser.parseFile(bank, path);
                         break;
                     case ".xml":
                         //dates will be converted to CVS format: day/month/year
-                        temp = xmlParser.parseFile(temp, path);
+                        bank = xmlParser.parseFile(bank, path);
                         break;
                     default:
                         Console.WriteLine("Unsuported file type " + format);
@@ -48,18 +48,20 @@ namespace supportbank
                 }
             }
 
-            return temp;
+            return bank;
         }
 
         static void displayStatus(Bank bank, String key)
         {
-            if(bank.getAccount(key).TotalAmount > 0)
+            bank.getAccount(key).calculateAmount();
+
+            if (bank.getAccount(key).TotalAmount > 0)
             {
-                Console.WriteLine(key + " is owed " + bank.getAccount(key).TotalAmount);
+                Console.WriteLine(key + " is owed " + Math.Round(bank.getAccount(key).TotalAmount, 2));
             }
             else if(bank.getAccount(key).TotalAmount < 0)
             {
-                Console.WriteLine(key + " owes " + bank.getAccount(key).TotalAmount);
+                Console.WriteLine(key + " owes " + Math.Round(bank.getAccount(key).TotalAmount, 2));
             }
             else
             {
@@ -88,6 +90,8 @@ namespace supportbank
                         Console.WriteLine(accountName + " received " + transaction.Amount + " from " + transaction.From + " on " + transaction.Date + "; Narrative: " + transaction.Narrative);
                     }
                 }
+
+                Console.WriteLine("Testing\n");
             }
             else
             {
